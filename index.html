@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="むうむう">
-<title>MWMW むうむう Ver.1.3</title>
+<title>MWMW むうむう Ver.1.3.1</title>
 <style>
 :root{
   --bg:#fbfbfe;--card:#ffffff;--text:#30313b;--muted:#77788a;--line:#ececf3;
@@ -335,7 +335,7 @@ function statusFor(t,now){
 function inView(t,now){
   const due=parse(t.due), wake=wakeDateFor(t);
   const days=diffDays(due,now);
-  if(view==='today') return now>=wake && days<=0 || days===0 || (now>=wake && days<=3);
+  if(view==='today') return now>=wake;
   if(view==='week') return now>=wake && days<=7;
   if(view==='month') return now>=wake && days<=31;
   if(view==='radar') return days>31 || now<wake;
@@ -348,7 +348,8 @@ function heroText(now){
   if(overdue) return ['😱💦💦','過ぎちゃったタスクがあるよ。','責めない。でも、ごまかさない。今できることから確認しよ。'];
   if(urgent) return ['😰💦','ちょ、ちょっと急いだ方がいいかも！',`${urgent}件、3日以内のタスクがあります。`];
   if(active.length) return ['😊🪄','今日も、むうむうが覚えてるよ。',`${active.length}件のタスクが現在の視界に入っています。`];
-  return ['😴','いまは静かだよ。','必要な時がきたら、ちゃんと思い出させるね。'];
+  if(tasks.length) return ['😴','いまは静かだよ。',`${tasks.length}件預かってるよ。まだ声をかける時期じゃないから、安心して忘れててね。`];
+  return ['😴','いまは静かだよ。','まだ預かっているタスクはありません。必要なことを預けてね。'];
 }
 function render(){
   const now=startDay(new Date());
@@ -394,6 +395,10 @@ taskForm.onsubmit=e=>{
   const obj={id:taskId.value||crypto.randomUUID(),title:title.value.trim(),due:due.value,reminders,repeat:repeat.value,risk:risk.value,notes:notes.value.trim()};
   const idx=tasks.findIndex(x=>x.id===obj.id); if(idx>=0)tasks[idx]=obj; else tasks.push(obj);
   save(); taskDialog.close(); render();
+  const justSaved=tasks.find(x=>x.id===obj.id);
+  if(justSaved && startDay(new Date()) < wakeDateFor(justSaved)){
+    alert(`登録しました。むうむうが預かりました。\nこのタスクは ${fmt(wakeDateFor(justSaved))} から声をかけます。`);
+  }
 };
 
 

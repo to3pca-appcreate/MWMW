@@ -1,4 +1,4 @@
-const CACHE='mwmw-v1.3-cache-1';
+const CACHE='mwmw-v1.3.1-cache-1';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icons/icon-180.png','./icons/icon-192.png','./icons/icon-512.png'];
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));
