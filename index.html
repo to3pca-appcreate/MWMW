@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f8f7ff">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="むうむう">
+<title>MWMW むうむう Ver.1.3</title>
+<style>
+:root{
+  --bg:#fbfbfe;--card:#ffffff;--text:#30313b;--muted:#77788a;--line:#ececf3;
+  --mint:#dff6ed;--blue:#e4f0ff;--lav:#eee7ff;--yellow:#fff3c9;--coral:#ffe0da;--red:#ffd2d2;
+  --accent1:#eee7ff;--accent2:#dff6ed;--shadow:0 8px 24px rgba(48,49,59,.08);
+}
+body.theme-mint{--accent1:#e4f0ff;--accent2:#dff6ed}
+body.theme-pink{--accent1:#ffe6f1;--accent2:#fff0f6}
+body.theme-purple{--accent1:#eee7ff;--accent2:#f6eaff}
+body.theme-peach{--accent1:#ffe8df;--accent2:#fff3d9}
+*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;background:var(--bg);color:var(--text)}
+header{position:sticky;top:0;z-index:5;padding:calc(env(safe-area-inset-top) + 14px) 18px 12px;background:rgba(251,251,254,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px}.logo{font-weight:900;letter-spacing:.08em;font-size:22px}.nickname{font-weight:700;color:#696b7e}
+.tagline{font-size:12px;color:var(--muted);margin-top:3px}
+main{max-width:680px;margin:auto;padding:16px 14px 110px}
+.hero{background:linear-gradient(135deg,var(--accent1),var(--accent2));border-radius:22px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.hero .muu{font-size:36px}.hero h1{font-size:20px;margin:4px 0}.hero p{margin:0;color:#5f6070;font-size:14px;line-height:1.5}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:12px 0 16px}
+.tabs button{border:0;border-radius:14px;padding:10px 6px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.05);font-size:12px;color:#555666}
+.tabs button.active{background:#30313b;color:#fff}
+.section-title{font-size:15px;font-weight:800;margin:18px 4px 9px}
+.card{background:var(--card);border-radius:18px;padding:14px;margin:9px 0;box-shadow:var(--shadow);border-left:7px solid #ddd}
+.card.S{border-color:#ff7f7f}.card.A{border-color:#ffb08e}.card.B{border-color:#ffd36d}.card.C{border-color:#9adbc9}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.task-title{font-weight:800;font-size:16px;line-height:1.35}.badge{font-size:11px;border-radius:999px;padding:5px 8px;background:#f2f2f7;white-space:nowrap}
+.meta{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.6}
+.actions{display:flex;gap:8px;margin-top:10px}.actions button{border:0;border-radius:12px;padding:8px 10px;font-weight:700}
+.done{background:var(--mint)}.edit{background:var(--blue)}.del{background:#f3f3f6;color:#777}
+.fab{position:fixed;right:18px;bottom:calc(env(safe-area-inset-bottom) + 20px);width:58px;height:58px;border:0;border-radius:50%;font-size:30px;background:#30313b;color:#fff;box-shadow:0 10px 24px rgba(48,49,59,.25)}
+.empty{text-align:center;color:var(--muted);padding:34px 8px}
+dialog{border:0;border-radius:22px;width:min(94vw,560px);padding:0;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+dialog::backdrop{background:rgba(38,39,48,.3);backdrop-filter:blur(4px)}
+.form{padding:18px}.form h2{margin:0 0 14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+input,select,textarea{width:100%;border:1px solid #dedee8;border-radius:12px;padding:11px;font-size:16px;background:#fff}
+textarea{min-height:80px;resize:vertical}.full{grid-column:1/-1}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}.form-actions button{border:0;border-radius:12px;padding:10px 14px;font-weight:800}
+.primary{background:#30313b;color:#fff}.secondary{background:#eeeef4}
+.small-note{font-size:11px;color:#8a8b98;margin-top:5px}
+.reminders{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.reminders label{margin:0;background:#f5f5f9;border-radius:12px;padding:9px 7px;color:#555666;text-align:center;font-size:12px}
+.reminders input{width:auto;margin-right:4px;vertical-align:middle}
+.theme-row{display:flex;gap:8px;flex-wrap:wrap}.theme-dot{border:2px solid transparent;border-radius:999px;padding:8px 11px;font-size:12px;background:#f4f4f8}
+.theme-dot.selected{border-color:#666}
+.alert{font-weight:800}.overdue{color:#c73d3d}
+
+.template-launch{width:100%;border:0;border-radius:15px;padding:11px 12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));font-weight:800;color:#4f5060;margin:4px 0 12px}
+.template-list{display:grid;gap:8px;max-height:58vh;overflow:auto;padding-right:2px}
+.template-group{font-weight:900;font-size:13px;margin:12px 2px 4px;color:#555666}
+.template-item{display:flex;gap:10px;align-items:flex-start;background:#f8f8fb;border-radius:14px;padding:11px}
+.template-item input{width:auto;margin-top:3px}
+.template-copy{flex:1}
+.template-name{font-weight:800;font-size:14px}
+.template-desc{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.45}
+.template-tags{font-size:10px;color:#777;margin-top:5px}
+
+
+.backup-launch{width:100%;border:0;border-radius:15px;padding:11px 12px;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.05);font-weight:800;color:#555666;margin:0 0 12px}
+.backup-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.backup-grid button{border:0;border-radius:13px;padding:11px;font-weight:800}
+.backup-export{background:var(--mint)} .backup-import{background:var(--blue)}
+
+@media(max-width:440px){.grid{grid-template-columns:1fr}.tabs{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="logo">MWMW</span><span class="nickname">むうむう</span></div>
+  <div class="tagline">覚えることを減らして、生きることを増やす。</div>
+</header>
+<main>
+  <div class="hero" id="hero"></div>
+  <button class="template-launch" id="templateBtn">🪄 おすすめタスクから追加する</button>
+<button class="backup-launch" id="backupBtn">☁️ バックアップ・復元</button>
+  <div class="tabs">
+    <button data-view="today" class="active">今日</button>
+    <button data-view="week">今週</button>
+    <button data-view="month">今月</button>
+    <button data-view="radar">レーダー</button>
+  </div>
+  <div id="list"></div>
+</main>
+<button class="fab" id="addBtn" aria-label="タスク追加">＋</button>
+
+
+
+<dialog id="backupDialog">
+  <div class="form">
+    <h2>バックアップ・復元 ☁️</h2>
+    <div class="small-note">
+      今のタスク・テーマ設定を1つのJSONファイルに保存できます。
+      iPhoneでは「ファイル」アプリやiCloud Drive等へ保存しておくと安心です。
+    </div>
+    <div class="backup-grid">
+      <button type="button" class="backup-export" id="exportBackup">バックアップを書き出す</button>
+      <button type="button" class="backup-import" id="importBackupBtn">バックアップから復元</button>
+    </div>
+    <input type="file" id="importBackupFile" accept=".json,application/json" hidden>
+    <div class="small-note" style="margin-top:14px">
+      復元すると、現在のタスク一覧はバックアップ時点の内容に置き換わります。
+    </div>
+    <div class="form-actions">
+      <button type="button" class="secondary" id="backupClose">閉じる</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="templateDialog">
+  <div class="form">
+    <h2>おすすめタスク集 🪄</h2>
+    <div class="small-note" style="margin-bottom:12px">必要なものだけ選んでください。追加後に期限や声かけタイミングは自由に編集できます。</div>
+    <div class="template-list" id="templateList"></div>
+    <div class="form-actions">
+      <button type="button" class="secondary" id="templateCancel">閉じる</button>
+      <button type="button" class="primary" id="templateAdd">選んだものを追加</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="taskDialog">
+<form method="dialog" class="form" id="taskForm">
+<h2 id="formTitle">タスクを追加</h2>
+<input type="hidden" id="taskId">
+<div class="grid">
+  <div class="full"><label>タスク名</label><input id="title" required placeholder="例：労働保険 年度更新"></div>
+  <div><label>期限</label><input id="due" type="date" required></div>
+  <div><label>繰り返し</label>
+    <select id="repeat">
+      <option value="none">単発</option>
+      <option value="daily">毎日</option>
+      <option value="weekly">毎週</option>
+      <option value="monthly">毎月</option>
+      <option value="yearly">毎年</option>
+    </select>
+  </div>
+  <div class="full"><label>むうむうに思い出してほしいタイミング（複数選択）</label>
+    <div class="reminders">
+      <label><input type="checkbox" name="rem" value="1">前日</label>
+      <label><input type="checkbox" name="rem" value="3">3日前</label>
+      <label><input type="checkbox" name="rem" value="7" checked>1週間前</label>
+      <label><input type="checkbox" name="rem" value="15">半月前</label>
+      <label><input type="checkbox" name="rem" value="30">1か月前</label>
+      <label><input type="checkbox" name="rem" value="90">3か月前</label>
+    </div>
+  </div>
+  <div><label>危険度</label>
+    <select id="risk">
+      <option value="S">S：失念禁止</option>
+      <option value="A">A：遅延すると損失</option>
+      <option value="B" selected>B：業務上重要</option>
+      <option value="C">C：通常業務</option>
+    </select>
+  </div>
+  <div class="full"><label>メモ／手順</label><textarea id="notes" placeholder="例：資料収集 → 集計 → 提出 → 納付 → 控え保存"></textarea></div>
+  <div class="full"><label>むうむうの雰囲気</label>
+    <div class="theme-row" id="themeRow">
+      <button type="button" class="theme-dot" data-theme="mint">ミント</button>
+      <button type="button" class="theme-dot" data-theme="pink">ピンク</button>
+      <button type="button" class="theme-dot" data-theme="purple">パープル</button>
+      <button type="button" class="theme-dot" data-theme="peach">ピーチ</button>
+    </div>
+  </div>
+</div>
+<div class="small-note">※ 期限を中心に、むうむうが段階的に思い出させます。</div>
+<div class="form-actions">
+  <button type="button" class="secondary" id="cancelBtn">キャンセル</button>
+  <button type="submit" class="primary">保存</button>
+</div>
+</form>
+</dialog>
+
+<script>
+const KEY='mwmw_v1_tasks';
+const THEME_KEY='mwmw_v1_theme';
+let tasks=JSON.parse(localStorage.getItem(KEY)||'[]');
+let view='today';
+let currentTheme=localStorage.getItem(THEME_KEY)||'purple';
+document.body.classList.add('theme-'+currentTheme);
+
+const starterTemplates=[
+  {group:'会社・経営の定番',title:'労働保険 年度更新',repeat:'yearly',risk:'S',month:7,day:10,reminders:[90,30,7,3,1],notes:'申告準備 → 集計 → 提出 → 納付 → 控え保存。実際の年度期限を確認して調整。'},
+  {group:'会社・経営の定番',title:'自動車税の納付',repeat:'yearly',risk:'S',month:5,day:31,reminders:[30,7,3],notes:'納税通知書到着後、支払方法・期限を確認。自治体・車両により期限は要確認。'},
+  {group:'会社・経営の定番',title:'給与計算・振込',repeat:'monthly',risk:'S',month:null,day:25,reminders:[7,3,1],notes:'締日・支払日は会社設定に合わせて変更。勤怠確認 → 給与計算 → 振込 → 明細。'},
+  {group:'会社・経営の定番',title:'社会保険・労務の定例確認',repeat:'monthly',risk:'S',month:null,day:20,reminders:[7,3],notes:'資格取得喪失、勤務条件変更、保険料等の要確認事項を点検。'},
+  {group:'会社・経営の定番',title:'人事評価・面談',repeat:'yearly',risk:'A',month:3,day:15,reminders:[90,30,7],notes:'評価資料準備 → 面談 → 記録 → 昇給・配置等への反映。時期は自社制度に合わせて変更。'},
+  {group:'会社・経営の定番',title:'就業規則・給与規程等の年次確認',repeat:'yearly',risk:'S',month:3,day:1,reminders:[90,30,7],notes:'法改正・運用変更・周知状況を確認。必要に応じて改定・届出・周知。'},
+  {group:'会社・経営の定番',title:'年次有給休暇・労務管理の年次確認',repeat:'yearly',risk:'S',month:4,day:1,reminders:[90,30,7],notes:'取得状況、付与、年5日取得義務等の対象者・進捗を確認。'},
+  {group:'障害福祉・処遇改善',title:'処遇改善加算 実績報告',repeat:'yearly',risk:'S',month:7,day:31,reminders:[90,30,7,3],notes:'提出時期・様式は年度ごとの通知を必ず確認。実績集計、賃金改善、法定福利費、証憑整理。'},
+  {group:'障害福祉・処遇改善',title:'処遇改善加算 計画書・年度更新対応',repeat:'yearly',risk:'S',month:4,day:15,reminders:[90,30,7,3],notes:'年度ごとの締切・要件変更を確認して期限を修正。'},
+  {group:'障害福祉・処遇改善',title:'処遇改善 入金額・実績の月次整理',repeat:'monthly',risk:'A',month:null,day:20,reminders:[7,3],notes:'入金額確認 → 管理表へ入力 → 賃金改善額との差額確認 → 証憑保存。'},
+  {group:'障害福祉・処遇改善',title:'賞与・処遇改善の期末調整',repeat:'yearly',risk:'A',month:2,day:15,reminders:[90,30,7],notes:'年間の加算入金・賃金改善・法定福利費等を確認し、必要な調整額を検討。'},
+  {group:'障害福祉・処遇改善',title:'職員研修の実施・記録確認',repeat:'yearly',risk:'A',month:2,day:1,reminders:[90,30,7],notes:'法定・加算要件上必要な研修の実施状況と記録・周知を確認。'},
+  {group:'MountainGo 試験用・現在タスク',title:'第2回口頭弁論',repeat:'none',risk:'S',fixedDue:'2026-08-28',reminders:[30,7,3,1],notes:'訴訟関連。期日・必要資料を確認。'},
+  {group:'MountainGo 試験用・現在タスク',title:'雇用保険未徴収分の賞与控除対応',repeat:'none',risk:'S',fixedDue:'2026-09-30',reminders:[30,7,3],notes:'9月賞与時の対応。実際の賞与支給日に合わせて期限を修正。'},
+  {group:'MountainGo 試験用・現在タスク',title:'処遇改善Ⅰロ 再分割後の再提出対応',repeat:'none',risk:'S',fixedDue:'2026-08-31',reminders:[30,7,3,1],notes:'8月再開後の再提出。実際の提出期限を確認して修正。'},
+  {group:'MountainGo 試験用・現在タスク',title:'MOSS 完成・運用開始',repeat:'none',risk:'B',fixedDue:'2026-08-31',reminders:[15,7,3],notes:'試作・検証・月次運用へ移行。'},
+  {group:'MountainGo 試験用・現在タスク',title:'MEAT 確認・開発継続',repeat:'none',risk:'B',fixedDue:'2026-08-15',reminders:[7,3,1],notes:'現行版を確認し、次の改善点を整理。'},
+  {group:'MountainGo 試験用・現在タスク',title:'評価制度を完成させる',repeat:'none',risk:'A',fixedDue:'2026-09-30',reminders:[30,15,7,3],notes:'職位・等級・職責・任用要件、昇給・昇進条件、キャリアパス等を整備。'},
+  {group:'MountainGo 試験用・現在タスク',title:'メンター制度を設計する',repeat:'none',risk:'B',fixedDue:'2026-09-30',reminders:[30,15,7],notes:'MountainGo型メンター制度、業務指導者対応表、簡易記録等。'},
+  {group:'MountainGo 試験用・現在タスク',title:'規程・マニュアル台帳を整備する',repeat:'none',risk:'A',fixedDue:'2026-09-30',reminders:[30,15,7],notes:'規程・マニュアルの一覧化、リンク化、更新管理。'},
+  {group:'MountainGo 試験用・現在タスク',title:'社内規程閲覧アプリを構築する',repeat:'none',risk:'B',fixedDue:'2026-10-31',reminders:[30,15,7],notes:'規程閲覧、新着通知、既読確認などを検討。'}
+];
+
+function nextTemplateDue(t){
+  if(t.fixedDue) return t.fixedDue;
+  const now=new Date(), y=now.getFullYear();
+  if(t.repeat==='monthly'){
+    let day=Math.min(t.day,new Date(y,now.getMonth()+1,0).getDate());
+    let d=new Date(y,now.getMonth(),day);
+    if(startDay(d)<startDay(now)){
+      const ny=now.getMonth()===11?y+1:y;
+      const nm=(now.getMonth()+1)%12;
+      day=Math.min(t.day,new Date(ny,nm+1,0).getDate());
+      d=new Date(ny,nm,day);
+    }
+    return fmt(d);
+  }
+  let d=new Date(y,(t.month||1)-1,t.day||1);
+  if(startDay(d)<startDay(now)) d=new Date(y+1,(t.month||1)-1,t.day||1);
+  return fmt(d);
+}
+
+function renderTemplates(){
+  templateList.innerHTML='';
+  let last='';
+  starterTemplates.forEach((t,i)=>{
+    if(t.group!==last){
+      const g=document.createElement('div');
+      g.className='template-group';
+      g.textContent=t.group;
+      templateList.appendChild(g);
+      last=t.group;
+    }
+    const row=document.createElement('label');
+    row.className='template-item';
+    row.innerHTML=`<input type="checkbox" value="${i}">
+      <div class="template-copy">
+        <div class="template-name">${escapeHtml(t.title)}</div>
+        <div class="template-desc">${escapeHtml(t.notes)}</div>
+        <div class="template-tags">${t.repeat==='yearly'?'毎年':t.repeat==='monthly'?'毎月':'単発'} ｜ 危険度 ${t.risk} ｜ 声かけ ${t.reminders.map(reminderLabel).join('・')}</div>
+      </div>`;
+    templateList.appendChild(row);
+  });
+}
+
+
+const pad=n=>String(n).padStart(2,'0');
+const fmt=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse=s=>{const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d)};
+const startDay=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
+const diffDays=(a,b)=>Math.round((startDay(a)-startDay(b))/86400000);
+
+function save(){localStorage.setItem(KEY,JSON.stringify(tasks))}
+function normalizeReminders(t){
+  if(Array.isArray(t.reminders)&&t.reminders.length) return t.reminders.map(Number).sort((a,b)=>b-a);
+  if(t.wake && t.due){
+    const lead=diffDays(parse(t.due),parse(t.wake));
+    return [Math.max(0,lead)];
+  }
+  return [7];
+}
+function wakeDateFor(t){
+  const rems=normalizeReminders(t);
+  const d=parse(t.due); d.setDate(d.getDate()-Math.max(...rems));
+  return d;
+}
+function reminderLabel(days){
+  return ({1:'前日',3:'3日前',7:'1週間前',15:'半月前',30:'1か月前',90:'3か月前'})[days] || `${days}日前`;
+}
+function addMonthsClamped(date,n){
+  const y=date.getFullYear(), m=date.getMonth(), day=date.getDate();
+  const target=new Date(y,m+n,1);
+  const last=new Date(target.getFullYear(),target.getMonth()+1,0).getDate();
+  target.setDate(Math.min(day,last)); return target;
+}
+function addYearsClamped(date,n){
+  const y=date.getFullYear()+n,m=date.getMonth(),day=date.getDate();
+  const last=new Date(y,m+1,0).getDate();
+  return new Date(y,m,Math.min(day,last));
+}
+function nextDate(date,repeat){
+  const d=new Date(date);
+  if(repeat==='daily') d.setDate(d.getDate()+1);
+  if(repeat==='weekly') d.setDate(d.getDate()+7);
+  if(repeat==='monthly') return addMonthsClamped(d,1);
+  if(repeat==='yearly') return addYearsClamped(d,1);
+  return d;
+}
+function completeTask(id){
+  const t=tasks.find(x=>x.id===id); if(!t)return;
+  if(t.repeat==='none'){tasks=tasks.filter(x=>x.id!==id)}
+  else{
+    const oldDue=parse(t.due);
+    const nd=nextDate(oldDue,t.repeat);
+    t.due=fmt(nd); t.reminders=normalizeReminders(t); delete t.wake; t.lastCompleted=fmt(new Date());
+  }
+  save(); render();
+}
+function editTask(id){
+  const t=tasks.find(x=>x.id===id); if(!t)return;
+  document.querySelector('#formTitle').textContent='タスクを編集';
+  taskId.value=t.id; title.value=t.title; due.value=t.due; repeat.value=t.repeat; risk.value=t.risk; notes.value=t.notes||'';
+  const rems=normalizeReminders(t);
+  document.querySelectorAll('input[name="rem"]').forEach(c=>c.checked=rems.includes(Number(c.value)));
+  taskDialog.showModal();
+}
+function deleteTask(id){
+  if(confirm('このタスクを削除しますか？')){tasks=tasks.filter(x=>x.id!==id);save();render()}
+}
+function statusFor(t,now){
+  const dueD=parse(t.due), wakeD=wakeDateFor(t);
+  const d=diffDays(dueD,now), rems=normalizeReminders(t);
+  if(d<0) return {label:`${Math.abs(d)}日超過`, cls:'overdue', face:'😱💦💦'};
+  if(d===0) return {label:'今日まで', cls:'alert', face:'😱💦'};
+  if(d<=3) return {label:`あと${d}日`, cls:'alert', face:'😰💦'};
+  if(d<=7) return {label:`あと${d}日`, cls:'', face:'😮'};
+  if(now>=wakeD) {
+    const passed=rems.filter(r=>d<=r).sort((a,b)=>a-b)[0];
+    return {label:`あと${d}日・${reminderLabel(passed||Math.max(...rems))}ゾーン`, cls:'', face:'😊🪄'};
+  }
+  return {label:`${fmt(wakeD)}からそっと予告`, cls:'', face:'💤'};
+}
+function inView(t,now){
+  const due=parse(t.due), wake=wakeDateFor(t);
+  const days=diffDays(due,now);
+  if(view==='today') return now>=wake && days<=0 || days===0 || (now>=wake && days<=3);
+  if(view==='week') return now>=wake && days<=7;
+  if(view==='month') return now>=wake && days<=31;
+  if(view==='radar') return days>31 || now<wake;
+  return true;
+}
+function heroText(now){
+  const active=tasks.filter(t=>now>=wakeDateFor(t));
+  const overdue=active.filter(t=>diffDays(parse(t.due),now)<0).length;
+  const urgent=active.filter(t=>{const d=diffDays(parse(t.due),now);return d>=0&&d<=3}).length;
+  if(overdue) return ['😱💦💦','過ぎちゃったタスクがあるよ。','責めない。でも、ごまかさない。今できることから確認しよ。'];
+  if(urgent) return ['😰💦','ちょ、ちょっと急いだ方がいいかも！',`${urgent}件、3日以内のタスクがあります。`];
+  if(active.length) return ['😊🪄','今日も、むうむうが覚えてるよ。',`${active.length}件のタスクが現在の視界に入っています。`];
+  return ['😴','いまは静かだよ。','必要な時がきたら、ちゃんと思い出させるね。'];
+}
+function render(){
+  const now=startDay(new Date());
+  const [face,h,p]=heroText(now);
+  hero.innerHTML=`<div class="muu">${face}</div><h1>${h}</h1><p>${p}</p>`;
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
+  let shown=tasks.filter(t=>inView(t,now)).sort((a,b)=>{
+    const r={S:0,A:1,B:2,C:3}; const dd=parse(a.due)-parse(b.due); return dd||r[a.risk]-r[b.risk];
+  });
+  const labels={S:'S 失念禁止',A:'A 損失注意',B:'B 重要',C:'C 通常'};
+  const repeats={none:'単発',daily:'毎日',weekly:'毎週',monthly:'毎月',yearly:'毎年'};
+  list.innerHTML=shown.length?'':`<div class="empty">この範囲のタスクはありません 🪄</div>`;
+  shown.forEach(t=>{
+    const s=statusFor(t,now);
+    const el=document.createElement('div'); el.className=`card ${t.risk}`;
+    el.innerHTML=`<div class="row"><div><div class="task-title">${s.face} ${escapeHtml(t.title)}</div>
+      <div class="meta"><span class="${s.cls}">${s.label}</span> ｜期限 ${t.due}<br>声かけ ${normalizeReminders(t).map(reminderLabel).join('・')} ｜ ${repeats[t.repeat]}</div>
+      ${t.notes?`<div class="meta">${escapeHtml(t.notes).replace(/\n/g,'<br>')}</div>`:''}</div>
+      <span class="badge">${labels[t.risk]}</span></div>
+      <div class="actions">
+        <button class="done">できた ✓</button><button class="edit">編集</button><button class="del">削除</button>
+      </div>`;
+    el.querySelector('.done').onclick=()=>completeTask(t.id);
+    el.querySelector('.edit').onclick=()=>editTask(t.id);
+    el.querySelector('.del').onclick=()=>deleteTask(t.id);
+    list.appendChild(el);
+  });
+}
+function escapeHtml(s){return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{view=b.dataset.view;render()});
+addBtn.onclick=()=>{
+  formTitle.textContent='タスクを追加'; taskForm.reset(); taskId.value='';
+  risk.value='B'; repeat.value='none';
+  document.querySelectorAll('input[name="rem"]').forEach(c=>c.checked=(c.value==='7'));
+  const today=fmt(new Date()); due.value=today;
+  taskDialog.showModal();
+};
+cancelBtn.onclick=()=>taskDialog.close();
+taskForm.onsubmit=e=>{
+  e.preventDefault();
+  const reminders=[...document.querySelectorAll('input[name="rem"]:checked')].map(c=>Number(c.value)).sort((a,b)=>b-a);
+  if(!reminders.length){alert('思い出してほしいタイミングを1つ以上選んでください。');return}
+  const obj={id:taskId.value||crypto.randomUUID(),title:title.value.trim(),due:due.value,reminders,repeat:repeat.value,risk:risk.value,notes:notes.value.trim()};
+  const idx=tasks.findIndex(x=>x.id===obj.id); if(idx>=0)tasks[idx]=obj; else tasks.push(obj);
+  save(); taskDialog.close(); render();
+};
+
+
+backupBtn.onclick=()=>backupDialog.showModal();
+backupClose.onclick=()=>backupDialog.close();
+
+function buildBackup(){
+  return {
+    app:'MWMW',
+    version:'1.3',
+    exportedAt:new Date().toISOString(),
+    tasks:tasks,
+    settings:{theme:currentTheme}
+  };
+}
+
+exportBackup.onclick=()=>{
+  const data=JSON.stringify(buildBackup(),null,2);
+  const blob=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const stamp=new Date().toISOString().slice(0,10);
+  a.href=url;
+  a.download=`MWMW_backup_${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+
+importBackupBtn.onclick=()=>importBackupFile.click();
+importBackupFile.onchange=async()=>{
+  const file=importBackupFile.files?.[0];
+  if(!file) return;
+  try{
+    const text=await file.text();
+    const data=JSON.parse(text);
+    if(data.app!=='MWMW' || !Array.isArray(data.tasks)) throw new Error('invalid');
+    if(!confirm('現在のタスクを、このバックアップ内容に置き換えますか？')) return;
+    tasks=data.tasks;
+    save();
+    if(data.settings?.theme){
+      document.body.classList.remove('theme-'+currentTheme);
+      currentTheme=data.settings.theme;
+      localStorage.setItem(THEME_KEY,currentTheme);
+      document.body.classList.add('theme-'+currentTheme);
+    }
+    backupDialog.close();
+    render();
+    alert('バックアップから復元しました。');
+  }catch(e){
+    alert('むうむうのバックアップファイルとして読み込めませんでした。');
+  }finally{
+    importBackupFile.value='';
+  }
+};
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+  });
+}
+
+templateBtn.onclick=()=>{ renderTemplates(); templateDialog.showModal(); };
+templateCancel.onclick=()=>templateDialog.close();
+templateAdd.onclick=()=>{
+  const selected=[...templateList.querySelectorAll('input[type="checkbox"]:checked')]
+    .map(c=>starterTemplates[Number(c.value)]);
+  if(!selected.length){ alert('追加したいタスクを選んでください。'); return; }
+
+  let added=0, skipped=0;
+  selected.forEach(t=>{
+    if(tasks.some(x=>x.title===t.title)){ skipped++; return; }
+    tasks.push({
+      id:crypto.randomUUID(),
+      title:t.title,
+      due:nextTemplateDue(t),
+      reminders:[...t.reminders],
+      repeat:t.repeat,
+      risk:t.risk,
+      notes:t.notes
+    });
+    added++;
+  });
+  save();
+  templateDialog.close();
+  render();
+  alert(`${added}件追加しました${skipped?`（${skipped}件は登録済みのためスキップ）`:''}。期限は実情に合わせて確認・編集してください。`);
+};
+
+document.querySelectorAll('.theme-dot').forEach(b=>{
+  b.classList.toggle('selected',b.dataset.theme===currentTheme);
+  b.onclick=()=>{
+    document.body.classList.remove('theme-'+currentTheme);
+    currentTheme=b.dataset.theme; localStorage.setItem(THEME_KEY,currentTheme);
+    document.body.classList.add('theme-'+currentTheme);
+
+const starterTemplates=[
+  {group:'会社・経営の定番',title:'労働保険 年度更新',repeat:'yearly',risk:'S',month:7,day:10,reminders:[90,30,7,3,1],notes:'申告準備 → 集計 → 提出 → 納付 → 控え保存。実際の年度期限を確認して調整。'},
+  {group:'会社・経営の定番',title:'自動車税の納付',repeat:'yearly',risk:'S',month:5,day:31,reminders:[30,7,3],notes:'納税通知書到着後、支払方法・期限を確認。自治体・車両により期限は要確認。'},
+  {group:'会社・経営の定番',title:'給与計算・振込',repeat:'monthly',risk:'S',month:null,day:25,reminders:[7,3,1],notes:'締日・支払日は会社設定に合わせて変更。勤怠確認 → 給与計算 → 振込 → 明細。'},
+  {group:'会社・経営の定番',title:'社会保険・労務の定例確認',repeat:'monthly',risk:'S',month:null,day:20,reminders:[7,3],notes:'資格取得喪失、勤務条件変更、保険料等の要確認事項を点検。'},
+  {group:'会社・経営の定番',title:'人事評価・面談',repeat:'yearly',risk:'A',month:3,day:15,reminders:[90,30,7],notes:'評価資料準備 → 面談 → 記録 → 昇給・配置等への反映。時期は自社制度に合わせて変更。'},
+  {group:'会社・経営の定番',title:'就業規則・給与規程等の年次確認',repeat:'yearly',risk:'S',month:3,day:1,reminders:[90,30,7],notes:'法改正・運用変更・周知状況を確認。必要に応じて改定・届出・周知。'},
+  {group:'会社・経営の定番',title:'年次有給休暇・労務管理の年次確認',repeat:'yearly',risk:'S',month:4,day:1,reminders:[90,30,7],notes:'取得状況、付与、年5日取得義務等の対象者・進捗を確認。'},
+  {group:'障害福祉・処遇改善',title:'処遇改善加算 実績報告',repeat:'yearly',risk:'S',month:7,day:31,reminders:[90,30,7,3],notes:'提出時期・様式は年度ごとの通知を必ず確認。実績集計、賃金改善、法定福利費、証憑整理。'},
+  {group:'障害福祉・処遇改善',title:'処遇改善加算 計画書・年度更新対応',repeat:'yearly',risk:'S',month:4,day:15,reminders:[90,30,7,3],notes:'年度ごとの締切・要件変更を確認して期限を修正。'},
+  {group:'障害福祉・処遇改善',title:'処遇改善 入金額・実績の月次整理',repeat:'monthly',risk:'A',month:null,day:20,reminders:[7,3],notes:'入金額確認 → 管理表へ入力 → 賃金改善額との差額確認 → 証憑保存。'},
+  {group:'障害福祉・処遇改善',title:'賞与・処遇改善の期末調整',repeat:'yearly',risk:'A',month:2,day:15,reminders:[90,30,7],notes:'年間の加算入金・賃金改善・法定福利費等を確認し、必要な調整額を検討。'},
+  {group:'障害福祉・処遇改善',title:'職員研修の実施・記録確認',repeat:'yearly',risk:'A',month:2,day:1,reminders:[90,30,7],notes:'法定・加算要件上必要な研修の実施状況と記録・周知を確認。'},
+  {group:'MountainGo 試験用・現在タスク',title:'第2回口頭弁論',repeat:'none',risk:'S',fixedDue:'2026-08-28',reminders:[30,7,3,1],notes:'訴訟関連。期日・必要資料を確認。'},
+  {group:'MountainGo 試験用・現在タスク',title:'雇用保険未徴収分の賞与控除対応',repeat:'none',risk:'S',fixedDue:'2026-09-30',reminders:[30,7,3],notes:'9月賞与時の対応。実際の賞与支給日に合わせて期限を修正。'},
+  {group:'MountainGo 試験用・現在タスク',title:'処遇改善Ⅰロ 再分割後の再提出対応',repeat:'none',risk:'S',fixedDue:'2026-08-31',reminders:[30,7,3,1],notes:'8月再開後の再提出。実際の提出期限を確認して修正。'},
+  {group:'MountainGo 試験用・現在タスク',title:'MOSS 完成・運用開始',repeat:'none',risk:'B',fixedDue:'2026-08-31',reminders:[15,7,3],notes:'試作・検証・月次運用へ移行。'},
+  {group:'MountainGo 試験用・現在タスク',title:'MEAT 確認・開発継続',repeat:'none',risk:'B',fixedDue:'2026-08-15',reminders:[7,3,1],notes:'現行版を確認し、次の改善点を整理。'},
+  {group:'MountainGo 試験用・現在タスク',title:'評価制度を完成させる',repeat:'none',risk:'A',fixedDue:'2026-09-30',reminders:[30,15,7,3],notes:'職位・等級・職責・任用要件、昇給・昇進条件、キャリアパス等を整備。'},
+  {group:'MountainGo 試験用・現在タスク',title:'メンター制度を設計する',repeat:'none',risk:'B',fixedDue:'2026-09-30',reminders:[30,15,7],notes:'MountainGo型メンター制度、業務指導者対応表、簡易記録等。'},
+  {group:'MountainGo 試験用・現在タスク',title:'規程・マニュアル台帳を整備する',repeat:'none',risk:'A',fixedDue:'2026-09-30',reminders:[30,15,7],notes:'規程・マニュアルの一覧化、リンク化、更新管理。'},
+  {group:'MountainGo 試験用・現在タスク',title:'社内規程閲覧アプリを構築する',repeat:'none',risk:'B',fixedDue:'2026-10-31',reminders:[30,15,7],notes:'規程閲覧、新着通知、既読確認などを検討。'}
+];
+
+function nextTemplateDue(t){
+  if(t.fixedDue) return t.fixedDue;
+  const now=new Date(), y=now.getFullYear();
+  if(t.repeat==='monthly'){
+    let day=Math.min(t.day,new Date(y,now.getMonth()+1,0).getDate());
+    let d=new Date(y,now.getMonth(),day);
+    if(startDay(d)<startDay(now)){
+      const ny=now.getMonth()===11?y+1:y;
+      const nm=(now.getMonth()+1)%12;
+      day=Math.min(t.day,new Date(ny,nm+1,0).getDate());
+      d=new Date(ny,nm,day);
+    }
+    return fmt(d);
+  }
+  let d=new Date(y,(t.month||1)-1,t.day||1);
+  if(startDay(d)<startDay(now)) d=new Date(y+1,(t.month||1)-1,t.day||1);
+  return fmt(d);
+}
+
+function renderTemplates(){
+  templateList.innerHTML='';
+  let last='';
+  starterTemplates.forEach((t,i)=>{
+    if(t.group!==last){
+      const g=document.createElement('div');
+      g.className='template-group';
+      g.textContent=t.group;
+      templateList.appendChild(g);
+      last=t.group;
+    }
+    const row=document.createElement('label');
+    row.className='template-item';
+    row.innerHTML=`<input type="checkbox" value="${i}">
+      <div class="template-copy">
+        <div class="template-name">${escapeHtml(t.title)}</div>
+        <div class="template-desc">${escapeHtml(t.notes)}</div>
+        <div class="template-tags">${t.repeat==='yearly'?'毎年':t.repeat==='monthly'?'毎月':'単発'} ｜ 危険度 ${t.risk} ｜ 声かけ ${t.reminders.map(reminderLabel).join('・')}</div>
+      </div>`;
+    templateList.appendChild(row);
+  });
+}
+
+    document.querySelectorAll('.theme-dot').forEach(x=>x.classList.toggle('selected',x===b));
+  };
+});
+render();
+</script>
+</body></html>
